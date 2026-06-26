@@ -1,0 +1,264 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "GeoOperator API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/auth/logout": {
+            "post": {
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Выход пользователя",
+                "operationId": "1536ec034ecbb551483aeacfd4eea588",
+                "responses": {
+                    "200": {
+                        "description": "Успешный выход",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован"
+                    },
+                    "403": {
+                        "description": "Ошибка выхода"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/auth/sessions": {
+            "get": {
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Получить список активных сессий текущего пользователя",
+                "description": "Возвращает список всех активных сессий (устройств), с которых пользователь авторизован. Требуется аутентификация через Bearer-токен.",
+                "operationId": "7caa651cf995be9e83bd413f31c536c5",
+                "responses": {
+                    "200": {
+                        "description": "Список активных сессий пользователя",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "description": "ID сессии",
+                                                "type": "integer",
+                                                "example": 14
+                                            },
+                                            "ip_address": {
+                                                "description": "IP-адрес, с которого была создана сессия",
+                                                "type": "string",
+                                                "example": "127.0.0.1"
+                                            },
+                                            "user_agent": {
+                                                "description": "User-Agent браузера/клиента",
+                                                "type": "string",
+                                                "example": "PostmanRuntime/7.49.1"
+                                            },
+                                            "device_type": {
+                                                "description": "Тип устройства (desktop, mobile, bot, unknown и т.д.)",
+                                                "type": "string",
+                                                "example": "bot"
+                                            },
+                                            "browser": {
+                                                "description": "Браузер",
+                                                "type": "string",
+                                                "example": "unknown"
+                                            },
+                                            "platform": {
+                                                "description": "Платформа/ОС",
+                                                "type": "string",
+                                                "example": "unknown"
+                                            },
+                                            "last_used_at": {
+                                                "description": "Время последнего использования сессии",
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2026-03-06T13:05:28.000000Z"
+                                            },
+                                            "created_at": {
+                                                "description": "Время создания сессии",
+                                                "type": "string",
+                                                "format": "date-time",
+                                                "example": "2026-03-06T08:37:57.000000Z"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован (токен отсутствует, недействителен или истёк)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещён (например, токен не имеет нужных прав)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Авторизация"
+                ],
+                "summary": "Удалить выбранные сессии текущего пользователя",
+                "description": "Удаляет одну или несколько активных сессий (устройств) по их ID. Требуется аутентификация через Bearer-токен. После удаления сессии пользователь будет разлогинен на соответствующих устройствах.",
+                "operationId": "ed1a8bbd239b33ff2a49e75e9ba73e1e",
+                "parameters": [
+                    {
+                        "name": "session_ids[]",
+                        "in": "query",
+                        "description": "Массив ID сессий, которые нужно удалить (можно передать несколько значений через session_ids[]=11&session_ids[]=22)",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer",
+                                "example": 11
+                            }
+                        },
+                        "example": "session_ids[]=11&session_ids[]=13"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Сессии успешно удалены",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "description": "Флаг успешного выполнения",
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Не авторизован (токен отсутствует, недействителен или истёк)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Доступ запрещён (например, токен не имеет прав или сессии не принадлежат пользователю)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Forbidden"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации (например, session_ids не передан или не является массивом)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The session_ids field is required."
+                                        },
+                                        "errors": {
+                                            "type": "object",
+                                            "additionalProperties": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Авторизация",
+            "description": ""
+        }
+    ]
+}
